@@ -10,8 +10,8 @@ import (
 
 func createCGroups(containerID string, createCGroupDirs bool) {
 	cgroups := []string{"/sys/fs/cgroup/memory/gocker/" + containerID,
-						"/sys/fs/cgroup/pids/gocker/" + containerID,
-						"/sys/fs/cgroup/cpu/gocker/" + containerID}
+		"/sys/fs/cgroup/pids/gocker/" + containerID,
+		"/sys/fs/cgroup/cpu/gocker/" + containerID}
 
 	if createCGroupDirs {
 		doOrDieWithMsg(createDirsIfDontExist(cgroups),
@@ -19,9 +19,9 @@ func createCGroups(containerID string, createCGroupDirs bool) {
 	}
 
 	for _, cgroupDir := range cgroups {
-		doOrDieWithMsg(ioutil.WriteFile(cgroupDir + "/notify_on_release", []byte("1"), 0700),
-			"Unable to write to cgroup notification file")
-		doOrDieWithMsg(ioutil.WriteFile(cgroupDir + "/cgroup.procs",
+		//doOrDieWithMsg(ioutil.WriteFile(cgroupDir + "/notify_on_release", []byte("1"), 0700),
+		//	"Unable to write to cgroup notification file")
+		doOrDieWithMsg(ioutil.WriteFile(cgroupDir+"/cgroup.procs",
 			[]byte(strconv.Itoa(os.Getpid())), 0700), "Unable to write to cgroup procs file")
 	}
 }
@@ -38,12 +38,12 @@ func removeCGroups(containerID string) {
 
 func setMemoryLimit(containerID string, limitMB int, swapLimitInMB int) {
 	memFilePath := "/sys/fs/cgroup/memory/gocker/" + containerID +
-											"/memory.limit_in_bytes"
+		"/memory.limit_in_bytes"
 	swapFilePath := "/sys/fs/cgroup/memory/gocker/" + containerID +
 		"/memory.memsw.limit_in_bytes"
 	doOrDieWithMsg(ioutil.WriteFile(memFilePath,
-				[]byte(strconv.Itoa(limitMB*1024*1024)), 0644),
-				"Unable to write memory limit")
+		[]byte(strconv.Itoa(limitMB*1024*1024)), 0644),
+		"Unable to write memory limit")
 
 	/*
 		memory.memsw.limit_in_bytes contains the total amount of memory the
@@ -59,7 +59,7 @@ func setMemoryLimit(containerID string, limitMB int, swapLimitInMB int) {
 	}
 }
 
-func setCpuLimit(containerID string, limit float64)  {
+func setCpuLimit(containerID string, limit float64) {
 	cfsPeriodPath := "/sys/fs/cgroup/cpu/gocker/" + containerID +
 		"/cpu.cfs_period_us"
 	cfsQuotaPath := "/sys/fs/cgroup/cpu/gocker/" + containerID +
@@ -75,12 +75,12 @@ func setCpuLimit(containerID string, limit float64)  {
 		"Unable to write CFS period")
 
 	doOrDieWithMsg(ioutil.WriteFile(cfsQuotaPath,
-		[]byte(strconv.Itoa(int(1000000 * limit))), 0644),
+		[]byte(strconv.Itoa(int(1000000*limit))), 0644),
 		"Unable to write CFS period")
 
 }
 
-func setPidsLimit(containerID string, limit int)  {
+func setPidsLimit(containerID string, limit int) {
 	maxProcsPath := "/sys/fs/cgroup/pids/gocker/" + containerID +
 		"/pids.max"
 
